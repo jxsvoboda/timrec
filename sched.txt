@@ -8,3 +8,4 @@ dow=pa; time=22:00; duration=90m; source=signal; name=cetba-pa-2-%D
 dow=so; time=22:00; duration=90m; source=signal; name=cetba-so-%D
 dow=ne; time=22:00; duration=90m; source=signal; name=cetba-ne-%D
 date=2015-09-10; time=14:31; duration=1m; source=cro2; name=special
+dow=so; time=13:10; duration=60s; name=foo

@@ -230,6 +230,9 @@ static int sched_parse_field_source(FILE *f, preset_t *p)
 	i = 0;
 	while (true) {
 		c = fgetc(f);
+		if (c == EOF)
+			break;
+
 		if (c == ';') {
 			ungetc(c, f);
 			break;
@@ -268,6 +271,9 @@ static int sched_parse_field_name(FILE *f, preset_t *p)
 	i = 0;
 	while (true) {
 		c = fgetc(f);
+		if (c == EOF)
+			break;
+
 		if (c == ';' || c == '\n') {
 			ungetc(c, f);
 			break;
@@ -314,6 +320,36 @@ static int sched_parse_field(FILE *f, char *fldname, preset_t *p)
 	return 0;
 }
 
+/** Verify that all required fields are present. */
+static int sched_preset_validate(preset_t *p)
+{
+	int rc;
+
+	rc = 0;
+
+	if (p->start.dsk == 0) {
+		printf("Preset must have either 'dow' or 'date' specified.\n");
+		rc = EINVAL;
+	}
+
+	if (!p->start.tod_valid) {
+		printf("Preset must have 'time' specified.\n");
+		rc = EINVAL;
+	}
+
+	if (p->duration_secs == 0) {
+		printf("Preset must have 'duration' specified.\n");
+		rc = EINVAL;
+	}
+
+	if (p->recname == NULL) {
+		printf("Preset must have 'name' specified.\n");
+		rc = EINVAL;
+	}
+
+	return rc;
+}
+
 static int sched_parse_preset(sched_t *sched, FILE *f)
 {
 	int rc;
@@ -358,7 +394,7 @@ static int sched_parse_preset(sched_t *sched, FILE *f)
 			goto error;
 
 		c = fgetc(f);
-		if (c == '\n')
+		if (c == EOF || c == '\n')
 			break;
 
 		if (c != ';') {
@@ -369,6 +405,12 @@ static int sched_parse_preset(sched_t *sched, FILE *f)
 	}
 
 	if (nf > 0) {
+		rc = sched_preset_validate(p);
+		if (rc != 0) {
+			preset_destroy(p);
+			return rc;
+		}
+
 		printf("Loaded preset %p recname='%s'\n", p, p->recname);
 		list_append(&p->lsched, &sched->presets);
 	} else {
