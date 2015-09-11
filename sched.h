@@ -7,8 +7,9 @@
 
 extern int sched_load(const char *, sched_t **);
 extern void sched_destroy(sched_t *);
-extern int sched_get_next_event(sched_t *, time_t, revent_t *);
+extern int sched_get_next_events(sched_t *, time_t, revents_t *);
 extern int sched_get_cur_start_events(sched_t *, time_t, revents_t *);
+extern void sched_init_events(revents_t *);
 extern void sched_free_events(revents_t *);
 
 #endif

@@ -14,6 +14,10 @@ typedef enum {
 /** Recording event
  */
 typedef struct {
+	/** Up pointer to revents */
+	struct revents *revents;
+	/** Link in revents_t.revents */
+	link_t lrevents;
 	/** Event type */
 	revent_type_t etype;
 	/** Preset where this event originates */
@@ -22,7 +26,7 @@ typedef struct {
 	time_t t;
 } revent_t;
 
-typedef struct {
+typedef struct revents {
 	list_t revents;
 } revents_t;
 

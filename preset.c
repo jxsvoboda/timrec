@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <stdio.h>
 int preset_create(preset_t **rpreset)
 {
 	preset_t *preset;
@@ -66,21 +65,21 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 		tstop = preset_stop(preset);
 
 		if (tstart >= t) {
-			printf("**START**\n");
 			/* Start */
 			revent->etype = re_start;
 			revent->preset = preset;
 			revent->t = tstart;
 		} else if (tstop >= t) {
-			printf("**STOP**\n");
 			/* Stop */
 			revent->etype = re_stop;
 			revent->preset = preset;
 			revent->t = tstop;
 		} else {
-			printf("**NOTHING**\n");
 			return ENOENT;
 		}
+
+		revent->revents = NULL;
+		link_initialize(&revent->lrevents);
 		break;
 	case ds_dow:
 		/* Get date from t */
@@ -89,18 +88,12 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 		date.m = tm.tm_mon + 1;
 		date.d = tm.tm_mday;
 
-		printf("Cur date: %d-%02d-%02d\n", date.y, date.m, date.d);
 		while (preset_stop_with_date(preset, &date) >= t) {
-			printf("Go to previous day.\n");
 			/* Previous day */
 			startspec_date_decr(&date);
-			printf("Cur date: %d-%02d-%02d\n", date.y, date.m, date.d);
 		}
 
-		printf("Cur date: %d-%02d-%02d\n", date.y, date.m, date.d);
 		while (true) {
-			printf("Cur date: %d-%02d-%02d\n", date.y, date.m, date.d);
-			printf("Check DOW\n");
 			/* Is it the correct DOW? */
 			if (startspec_date_get_dow(&date) ==
 			    preset->start.ds.dow.dow) {
@@ -109,23 +102,24 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 				tstop = preset_stop_with_date(preset, &date);
 
 				if (tstart >= t) {
-					printf("**START**\n");
 					/* Start */
 					revent->etype = re_start;
 					revent->preset = preset;
 					revent->t = tstart;
+					revent->revents = NULL;
+					link_initialize(&revent->lrevents);
 					return 0;
 				} else if (tstop >= t) {
-					printf("**STOP**\n");
 		    			/* Stop */
 					revent->etype = re_stop;
 					revent->preset = preset;
 					revent->t = tstop;
+					revent->revents = NULL;
+					link_initialize(&revent->lrevents);
 					return 0;
 				}
 			}
 
-			printf("Go to next day.\n");
 			/* Next day */
 			startspec_date_incr(&date);
 		}

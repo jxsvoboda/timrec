@@ -1,6 +1,7 @@
 #include <adt/list.h>
 #include <errno.h>
 #include <preset.h>
+#include <revent.h>
 #include <sched.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -19,7 +20,6 @@ static int sched_skip_ws(FILE *f)
 		if (c == 0)
 			return EIO;
 		if (c != ' ' && c != '\t') {
-			printf("ungetc('%c')\n", c);
 			ungetc(c, f);
 			break;
 		}
@@ -42,7 +42,6 @@ static int sched_parse_fld_name(FILE *f, char **fldname)
 	while (true) {
 		c = fgetc(f);
 		if (c == EOF) {
-			printf("End of file reached.\n");
 			*fldname = NULL;
 			return 0;
 		}
@@ -115,7 +114,6 @@ static int sched_parse_field_dow(FILE *f, preset_t *p)
 	p->start.dsk = ds_dow;
 	p->start.ds.dow.dow = d;
 
-	printf("Dow=%d\n", d);
 	return 0;
 }
 
@@ -149,7 +147,6 @@ static int sched_parse_field_time(FILE *f, preset_t *p)
 		return EIO;
 	}
 
-	printf("Time: %02d:%02d\n", h, m);
 	p->start.tod.h = h;
 	p->start.tod.m = m;
 	p->start.tod_valid = true;
@@ -172,18 +169,15 @@ static int sched_parse_field_duration(FILE *f, preset_t *p)
 
 	nfields = 0; lscale = 3600 * 24 + 1;
 	while (true) {
-		printf("read quantity\n");
 		nread = fscanf(f, "%d", &val);
 		if (nread != 1)
 			break;
 
-		printf("q=%d skip ws\n", val);
 		rc = sched_skip_ws(f);
 		if (rc != 0)
 			return EIO;
 
 		c = fgetc(f);
-		printf("read unit '%c'\n", c);
 		switch (c) {
 		case 'd':
 			scale = 3600 * 24;
@@ -218,7 +212,6 @@ static int sched_parse_field_duration(FILE *f, preset_t *p)
 		return EIO;
 	}
 
-	printf("Duration=%ds\n", duration);
 	p->duration_secs = duration;
 
 	return 0;
@@ -259,7 +252,6 @@ static int sched_parse_field_source(FILE *f, preset_t *p)
 	}
 
 	name_buf[i] = '\0';
-	printf("Source = '%s'\n", name_buf);
 	return 0;
 }
 
@@ -293,7 +285,6 @@ static int sched_parse_field_name(FILE *f, preset_t *p)
 	}
 
 	name_buf[i] = '\0';
-	printf("Name = '%s'\n", name_buf);
 	p->recname = strdup(name_buf);
 	if (p->recname == NULL)
 		return ENOMEM;
@@ -303,7 +294,6 @@ static int sched_parse_field_name(FILE *f, preset_t *p)
 
 static int sched_parse_field(FILE *f, char *fldname, preset_t *p)
 {
-	printf("Parse field '%s'.\n", fldname);
 	if (strcmp(fldname, "dow") == 0)
 		return sched_parse_field_dow(f, p);
 	else if (strcmp(fldname, "date") == 0)
@@ -339,7 +329,6 @@ static int sched_parse_preset(sched_t *sched, FILE *f)
 		return rc;
 
 	while (true) {
-		printf("parse field name\n");
 		rc = sched_parse_fld_name(f, &fldname);
 		if (rc != 0)
 			goto error;
@@ -347,12 +336,10 @@ static int sched_parse_preset(sched_t *sched, FILE *f)
 		if (fldname == NULL)
 			break;
 
-		printf("skip ws\n");
 		rc = sched_skip_ws(f);
 		if (rc != 0)
 			goto error;
 
-		printf("Field name is '%s'\n", fldname);
 		++nf;
 
 		c = fgetc(f);
@@ -362,7 +349,6 @@ static int sched_parse_preset(sched_t *sched, FILE *f)
 			goto error;
 		}
 
-		printf("parse fields\n");
 		rc = sched_parse_field(f, fldname, p);
 		if (rc != 0)
 			goto error;
@@ -383,6 +369,7 @@ static int sched_parse_preset(sched_t *sched, FILE *f)
 	}
 
 	if (nf > 0) {
+		printf("Loaded preset %p recname='%s'\n", p, p->recname);
 		list_append(&p->lsched, &sched->presets);
 	} else {
 		preset_destroy(p);
@@ -433,29 +420,41 @@ void sched_destroy(sched_t *sched)
 	free(sched);
 }
 
-int sched_get_next_event(sched_t *sched, time_t t, revent_t *revent)
+int sched_get_next_events(sched_t *sched, time_t t, revents_t *revents)
 {
 	int rc;
-	revent_t beste;
-	bool have_beste = false;
-	revent_t e;
+	time_t best_t;
+	revent_t e, *le;
+
+	sched_init_events(revents);
 
 	list_foreach(sched->presets, lsched, preset_t, p) {
 		rc = preset_get_next_event(p, t, &e);
-		printf("preset_get_next_event -> %d\n", rc);
 		if (rc == 0) {
-			printf("Got event.\n");
-			if (!have_beste || e.t < beste.t) {
-				beste = e;
-				have_beste = true;
+			if (list_empty(&revents->revents) || e.t < best_t) {
+				sched_free_events(revents);
+				best_t = e.t;
+
+				le = calloc(1, sizeof(revent_t));
+				if (le == NULL)
+					return ENOMEM;
+				*le = e;
+				list_append(&le->lrevents, &revents->revents);
+				le->revents = revents;
+			} else if (e.t == best_t) {
+				le = calloc(1, sizeof(revent_t));
+				if (le == NULL)
+					return ENOMEM;
+				*le = e;
+				list_append(&le->lrevents, &revents->revents);
+				le->revents = revents;
 			}
 		}
 	}
 
-	if (!have_beste)
+	if (list_empty(&revents->revents))
 		return ENOENT;
 
-	*revent = beste;
 	return 0;
 }
 
@@ -464,6 +463,18 @@ int sched_get_cur_start_events(sched_t *sched, time_t t, revents_t *revents)
 	return 0;
 }
 
+void sched_init_events(revents_t *revents)
+{
+	list_initialize(&revents->revents);
+}
+
 void sched_free_events(revents_t *revents)
 {
+	revent_t *e;
+
+	while (!list_empty(&revents->revents)) {
+		e = revent_first(revents);
+		list_remove(&e->lrevents);
+		free(e);
+	}
 }

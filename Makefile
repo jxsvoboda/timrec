@@ -4,7 +4,7 @@
 #
 
 CC = gcc
-CFLAGS = -Wall -I. -std=gnu99
+CFLAGS = -Wall -Werror -I. -std=gnu99
 LIBS =
 
 output = timrec
