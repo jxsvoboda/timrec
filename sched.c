@@ -502,6 +502,16 @@ int sched_get_next_events(sched_t *sched, time_t t, revents_t *revents)
 
 int sched_get_cur_start_events(sched_t *sched, time_t t, revents_t *revents)
 {
+	int rc;
+
+	sched_init_events(revents);
+
+	list_foreach(sched->presets, lsched, preset_t, p) {
+		rc = preset_append_cur_start_events(p, t, revents);
+		if (rc != 0)
+			return rc;
+	}
+
 	return 0;
 }
 

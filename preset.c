@@ -55,8 +55,7 @@ static time_t preset_stop(preset_t *preset)
 
 int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 {
-	time_t tstart, tstop = 0;
-	struct tm tm;
+	time_t tstart, tstop;
 	ds_date_t date;
 
 	switch (preset->start.dsk) {
@@ -69,24 +68,22 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 			revent->etype = re_start;
 			revent->preset = preset;
 			revent->t = tstart;
+			revent->revents = NULL;
+			link_initialize(&revent->lrevents);
 		} else if (tstop >= t) {
 			/* Stop */
 			revent->etype = re_stop;
 			revent->preset = preset;
 			revent->t = tstop;
+			revent->revents = NULL;
+			link_initialize(&revent->lrevents);
 		} else {
 			return ENOENT;
 		}
-
-		revent->revents = NULL;
-		link_initialize(&revent->lrevents);
 		break;
 	case ds_dow:
 		/* Get date from t */
-		(void) localtime_r(&t, &tm);
-		date.y = tm.tm_year + 1900;
-		date.m = tm.tm_mon + 1;
-		date.d = tm.tm_mday;
+		startspec_ts_date_tod(t, &date, NULL);
 
 		while (preset_stop_with_date(preset, &date) >= t) {
 			/* Previous day */
@@ -125,6 +122,77 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 		}
 
 		return ENOENT;
+	}
+
+	return 0;
+}
+
+/** Append start events for all active sessions.
+ *
+ * Append start events for all sessions active at @a t generated from
+ * @a preset to @a revents.
+ */
+int preset_append_cur_start_events(preset_t *preset, time_t t,
+    revents_t *revents)
+{
+	time_t tstart, tstop;
+	revent_t *revent;
+	ds_date_t date;
+
+	switch (preset->start.dsk) {
+	case ds_date:
+		tstart = preset_start(preset);
+		tstop = preset_stop(preset);
+
+		if (tstart < t && tstop >= t) {
+			revent = calloc(1, sizeof(revent_t));
+			if (revent == NULL)
+				return ENOMEM;
+
+			revent->etype = re_start;
+			revent->preset = preset;
+			revent->t = tstart;
+			revent->revents = revents;
+			link_initialize(&revent->lrevents);
+			list_append(&revent->lrevents, &revents->revents);
+		}
+		break;
+	case ds_dow:
+		/* Get date from t */
+		startspec_ts_date_tod(t, &date, NULL);
+
+		while (preset_stop_with_date(preset, &date) >= t) {
+			/* Previous day */
+			startspec_date_decr(&date);
+		}
+
+		while (preset_start_with_date(preset, &date) <= t) {
+			/* Is it the correct DOW? */
+			if (startspec_date_get_dow(&date) ==
+			    preset->start.ds.dow.dow) {
+
+				tstart = preset_start_with_date(preset, &date);
+				tstop = preset_stop_with_date(preset, &date);
+
+				if (tstart <= t && tstop >= t) {
+					revent = calloc(1, sizeof(revent_t));
+					if (revent == NULL)
+						return ENOMEM;
+
+					revent->etype = re_start;
+					revent->preset = preset;
+					revent->t = tstart;
+					revent->revents = revents;
+					link_initialize(&revent->lrevents);
+					list_append(&revent->lrevents, &revents->revents);
+
+				}
+			}
+
+			/* Next day */
+			startspec_date_incr(&date);
+		}
+		break;
 	}
 
 	return 0;

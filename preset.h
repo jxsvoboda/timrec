@@ -8,5 +8,6 @@
 extern int preset_create(preset_t **);
 extern void preset_destroy(preset_t *);
 extern int preset_get_next_event(preset_t *, time_t, revent_t *);
+extern int preset_append_cur_start_events(preset_t *, time_t, revents_t *);
 
 #endif

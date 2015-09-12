@@ -18,6 +18,24 @@ time_t startspec_date_tod_ts(ds_date_t *date, tod_t *tod)
         return mktime(&t);
 }
 
+void startspec_ts_date_tod(time_t t, ds_date_t *date, tod_t *tod)
+{
+	struct tm tm;
+
+	(void) localtime_r(&t, &tm);
+
+	if (date != NULL) {
+		date->y = tm.tm_year + 1900;
+		date->m = tm.tm_mon + 1;
+		date->d = tm.tm_mday;
+	}
+
+	if (tod != NULL) {
+		tod->h = tm.tm_hour;
+		tod->m = tm.tm_min;
+	}
+}
+
 int startspec_days_in_month(int year, int month)
 {
 	bool isleap;

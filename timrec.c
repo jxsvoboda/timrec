@@ -8,6 +8,23 @@
 
 const char *sched_fname = "sched.txt";
 
+static void timrec_revents_execute(revents_t *revents)
+{
+	revent_t *e;
+	int rc;
+
+	printf("Executing %lu events.\n", list_count(&revents->revents));
+	e = revent_first(revents);
+	while (e != NULL) {
+		rc = revent_execute(e);
+		if (rc != 0) {
+			printf("Error executing event.\n");
+		}
+
+		e = revent_next(e);
+	}
+}
+
 int main(void)
 {
 	sched_t *sched;
@@ -34,6 +51,19 @@ int main(void)
 	}
 
 	vtime = ts.tv_sec;
+
+	rc = sched_get_cur_start_events(sched, vtime, &nevents);
+	if (rc != 0) {
+		printf("Error getting event list.\n");
+		return 1;
+	}
+
+	if (!list_empty(&nevents.revents)) {
+		printf("WARNING: Late-starting %lu sessions which should "
+		    "already be in progress.\n", list_count(&nevents.revents));
+
+		timrec_revents_execute(&nevents);
+	}
 
 	while (true) {
 		rc = sched_get_next_events(sched, vtime, &nevents);
@@ -84,15 +114,7 @@ int main(void)
 		}
 
 		printf("Executing %lu events.\n", list_count(&nevents.revents));
-		e = e0;
-		while (e != NULL) {
-			rc = revent_execute(e);
-			if (rc != 0) {
-				printf("Error executing event.\n");
-			}
-
-			e = revent_next(e);
-		}
+		timrec_revents_execute(&nevents);
 
 		vtime = e0->t + 1;
 		sched_free_events(&nevents);
