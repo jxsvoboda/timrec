@@ -19,7 +19,9 @@ static int wget_start(char *src, char *recname, rsession_t *rs)
 {
 	pid_t pid;
 	char *rfname = NULL;
+	char *lfname = NULL;
 	wget_session_t *ws = NULL;
+	FILE *lf;
 	int rc;
 
 	printf("wget_start('%s', '%s', rrs)\n", src, recname);
@@ -40,6 +42,20 @@ static int wget_start(char *src, char *recname, rsession_t *rs)
 		goto error;
 	}
 
+	rc = asprintf(&lfname, "/var/opt/timrec/%s.log", recname);
+	if (rc < 0) {
+		printf("Out of memory.\n");
+		rc = ENOMEM;
+		goto error;
+	}
+
+	lf = fopen(lfname, "wt");
+	if (lf == NULL) {
+		printf("Error opening log file '%s'.\n", lfname);
+		rc = EIO;
+		goto error;
+	}
+
 	pid = fork();
 	if (pid < 0) {
 		printf("Error forking.\n");
@@ -47,13 +63,20 @@ static int wget_start(char *src, char *recname, rsession_t *rs)
 		goto error;
 	} else if (pid == 0) {
 		/* Child */
+		close(2);
+
+		/* Redirect standard error to log file */
+		rc = dup2(fileno(lf), 2);
+		if (rc < 0)
+			exit(1);
+
 		(void) execlp("wget", "wget", "-O", rfname, src, NULL);
 		/* If we get here, execlp() has failed */
 		exit(1);
 	}
 
-	printf("child pid=%u\n", pid);
 	/* Parent */
+	fclose(lf);
 	ws->pid = pid;
 	return 0;
 error:

@@ -40,6 +40,7 @@ int main(void)
 
 	printf("Timrec starting\n");
 
+	setvbuf(stdout, NULL, _IOLBF, 0);
 	revent_init();
 
 	rc = sched_load(sched_fname, &sched);
