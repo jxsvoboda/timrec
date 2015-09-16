@@ -37,6 +37,9 @@ int main(void)
 	int rc;
 
 	printf("Timrec starting\n");
+
+	revent_init();
+
 	rc = sched_load(sched_fname, &sched);
 	if (rc != 0) {
 		printf("Error loading schedule.\n");

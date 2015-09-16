@@ -68,6 +68,7 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 			revent->etype = re_start;
 			revent->preset = preset;
 			revent->t = tstart;
+			revent->rec_st = tstart;
 			revent->revents = NULL;
 			link_initialize(&revent->lrevents);
 		} else if (tstop >= t) {
@@ -75,6 +76,7 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 			revent->etype = re_stop;
 			revent->preset = preset;
 			revent->t = tstop;
+			revent->rec_st = tstart;
 			revent->revents = NULL;
 			link_initialize(&revent->lrevents);
 		} else {
@@ -103,6 +105,7 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 					revent->etype = re_start;
 					revent->preset = preset;
 					revent->t = tstart;
+					revent->rec_st = tstart;
 					revent->revents = NULL;
 					link_initialize(&revent->lrevents);
 					return 0;
@@ -111,6 +114,7 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 					revent->etype = re_stop;
 					revent->preset = preset;
 					revent->t = tstop;
+					revent->rec_st = tstart;
 					revent->revents = NULL;
 					link_initialize(&revent->lrevents);
 					return 0;
@@ -152,6 +156,7 @@ int preset_append_cur_start_events(preset_t *preset, time_t t,
 			revent->etype = re_start;
 			revent->preset = preset;
 			revent->t = tstart;
+			revent->rec_st = tstart;
 			revent->revents = revents;
 			link_initialize(&revent->lrevents);
 			list_append(&revent->lrevents, &revents->revents);
@@ -182,6 +187,7 @@ int preset_append_cur_start_events(preset_t *preset, time_t t,
 					revent->etype = re_start;
 					revent->preset = preset;
 					revent->t = tstart;
+					revent->rec_st = tstart;
 					revent->revents = revents;
 					link_initialize(&revent->lrevents);
 					list_append(&revent->lrevents, &revents->revents);

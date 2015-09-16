@@ -9,7 +9,7 @@
  * Single recording preset, describes a (posibly regularly occuring)
  * broadcast of interest.
  */
-typedef struct {
+typedef struct preset {
 	link_t lsched;
 	/** Start time specification */
 	startspec_t start;

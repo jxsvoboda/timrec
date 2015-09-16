@@ -4,7 +4,7 @@
 #
 
 CC = gcc
-CFLAGS = -Wall -Werror -I. -std=gnu99
+CFLAGS = -Wall -Werror -I. -std=gnu99 -D_GNU_SOURCE
 LIBS =
 
 output = timrec
@@ -15,7 +15,9 @@ prefix = /opt/timrec
 sources = \
 	adt/list.c \
 	preset.c \
+	rclass/wget.c \
 	revent.c \
+	rsession.c \
 	sched.c \
 	startspec.c \
 	timrec.c
