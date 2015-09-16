@@ -36,6 +36,7 @@ clean:
 	rm -f $(output) $(objects)
 
 install:
+	mkdir -p /var/opt/timrec
 	mkdir -p $(prefix)/bin
 	install -o root -g root -m 755 $(output) $(prefix)/bin/$(output)
 	install -o root -g root -m 755 $(rcscript) $(prefix)/bin/$(rcscript)

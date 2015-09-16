@@ -1,11 +1,11 @@
-dow=so; time=10:00; duration=60m; source=cro2; name=sobotni-hra-%D
-dow=po; time=22:00; duration=90m; source=signal; name=cetba-po-%D
-dow=ut; time=22:00; duration=90m; source=signal; name=cetba-ut-%D
-dow=st; time=22:00; duration=90m; source=signal; name=cetba-st-%D
-dow=ct; time=22:00; duration=90m; source=signal; name=cetba-ct-%D
-dow=pa; time=22:00; duration=90m; source=signal; name=cetba-pa-%D
-date=2015-09-11; time=12:30; duration=90m; source=signal; name=cetba-pa-2-%D
-dow=so; time=22:00; duration=90m; source=signal; name=cetba-so-%D
-dow=ne; time=22:00; duration=90m; source=signal; name=cetba-ne-%D
-date=2015-09-10; time=14:31; duration=1m; source=cro2; name=special
-dow=so; time=13:10; duration=60s; name=foo
+dow=so; time=10:00; duration=60m; source=cro2; name=sobotni-hra-%D.ogg
+dow=po; time=22:00; duration=90m; source=signal; name=cetba-po-%D.ogg
+dow=ut; time=22:00; duration=90m; source=signal; name=cetba-ut-%D.ogg
+dow=st; time=22:00; duration=90m; source=signal; name=cetba-st-%D.ogg
+dow=ct; time=22:00; duration=90m; source=signal; name=cetba-ct-%D.ogg
+dow=pa; time=22:00; duration=90m; source=signal; name=cetba-pa-%D.ogg
+date=2015-09-11; time=12:30; duration=90m; source=signal; name=cetba-pa-2-%D.ogg
+dow=so; time=22:00; duration=90m; source=signal; name=cetba-so-%D.ogg
+dow=ne; time=22:00; duration=90m; source=signal; name=cetba-ne-%D.ogg
+date=2015-09-10; time=14:31; duration=1m; source=cro2; name=special.ogg
+dow=so; time=13:10; duration=60s; name=foo.ogg
