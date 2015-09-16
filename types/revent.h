@@ -24,8 +24,8 @@ typedef struct {
 	preset_t *preset;
 	/** Time of this event */
 	time_t t;
-	/** Recording start time */
-	time_t rec_st;
+	/** Nominal start time */
+	time_t nst;
 } revent_t;
 
 typedef struct revents {

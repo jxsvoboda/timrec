@@ -39,6 +39,19 @@ static time_t preset_start(preset_t *preset)
 	return preset_start_with_date(preset, &preset->start.ds.date);
 }
 
+/** Nominal start time with preset instantitated on specified date. */
+static time_t preset_nom_start_with_date(preset_t *preset, ds_date_t *date)
+{
+	return startspec_date_tod_ts(date, &preset->start.tod);
+}
+
+static time_t preset_nom_start(preset_t *preset)
+{
+	assert(preset->start.dsk == ds_date);
+
+	return preset_nom_start_with_date(preset, &preset->start.ds.date);
+}
+
 /** Stop time with preset instantitated on specified date. */
 static time_t preset_stop_with_date(preset_t *preset, ds_date_t *date)
 {
@@ -55,20 +68,21 @@ static time_t preset_stop(preset_t *preset)
 
 int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 {
-	time_t tstart, tstop;
+	time_t tstart, tstop, nstart;
 	ds_date_t date;
 
 	switch (preset->start.dsk) {
 	case ds_date:
 		tstart = preset_start(preset);
 		tstop = preset_stop(preset);
+		nstart = preset_nom_start(preset);
 
 		if (tstart >= t) {
 			/* Start */
 			revent->etype = re_start;
 			revent->preset = preset;
 			revent->t = tstart;
-			revent->rec_st = tstart;
+			revent->nst = nstart;
 			revent->revents = NULL;
 			link_initialize(&revent->lrevents);
 		} else if (tstop >= t) {
@@ -76,7 +90,7 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 			revent->etype = re_stop;
 			revent->preset = preset;
 			revent->t = tstop;
-			revent->rec_st = tstart;
+			revent->nst = nstart;
 			revent->revents = NULL;
 			link_initialize(&revent->lrevents);
 		} else {
@@ -99,13 +113,15 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 
 				tstart = preset_start_with_date(preset, &date);
 				tstop = preset_stop_with_date(preset, &date);
+				nstart = preset_nom_start_with_date(preset,
+				    &date);
 
 				if (tstart >= t) {
 					/* Start */
 					revent->etype = re_start;
 					revent->preset = preset;
 					revent->t = tstart;
-					revent->rec_st = tstart;
+					revent->nst = nstart;
 					revent->revents = NULL;
 					link_initialize(&revent->lrevents);
 					return 0;
@@ -114,7 +130,7 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 					revent->etype = re_stop;
 					revent->preset = preset;
 					revent->t = tstop;
-					revent->rec_st = tstart;
+					revent->nst = nstart;
 					revent->revents = NULL;
 					link_initialize(&revent->lrevents);
 					return 0;
@@ -139,7 +155,7 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 int preset_append_cur_start_events(preset_t *preset, time_t t,
     revents_t *revents)
 {
-	time_t tstart, tstop;
+	time_t tstart, tstop, nstart;
 	revent_t *revent;
 	ds_date_t date;
 
@@ -147,6 +163,7 @@ int preset_append_cur_start_events(preset_t *preset, time_t t,
 	case ds_date:
 		tstart = preset_start(preset);
 		tstop = preset_stop(preset);
+		nstart = preset_nom_start(preset);
 
 		if (tstart < t && tstop >= t) {
 			revent = calloc(1, sizeof(revent_t));
@@ -156,7 +173,7 @@ int preset_append_cur_start_events(preset_t *preset, time_t t,
 			revent->etype = re_start;
 			revent->preset = preset;
 			revent->t = tstart;
-			revent->rec_st = tstart;
+			revent->nst = nstart;
 			revent->revents = revents;
 			link_initialize(&revent->lrevents);
 			list_append(&revent->lrevents, &revents->revents);
@@ -178,6 +195,8 @@ int preset_append_cur_start_events(preset_t *preset, time_t t,
 
 				tstart = preset_start_with_date(preset, &date);
 				tstop = preset_stop_with_date(preset, &date);
+				nstart = preset_nom_start_with_date(preset,
+				    &date);
 
 				if (tstart <= t && tstop >= t) {
 					revent = calloc(1, sizeof(revent_t));
@@ -187,7 +206,7 @@ int preset_append_cur_start_events(preset_t *preset, time_t t,
 					revent->etype = re_start;
 					revent->preset = preset;
 					revent->t = tstart;
-					revent->rec_st = tstart;
+					revent->nst = nstart;
 					revent->revents = revents;
 					link_initialize(&revent->lrevents);
 					list_append(&revent->lrevents, &revents->revents);

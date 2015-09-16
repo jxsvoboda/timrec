@@ -295,6 +295,11 @@ static int sched_parse_field_name(FILE *f, preset_t *p)
 	if (p->recname == NULL)
 		return ENOMEM;
 
+	if (!revent_rn_valid(p->recname)) {
+		printf("Invalid recording name pattern '%s'.\n", p->recname);
+		return EIO;
+	}
+
 	return 0;
 }
 

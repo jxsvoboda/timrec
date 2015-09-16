@@ -2,6 +2,7 @@
 #include <revent.h>
 #include <sched.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #define IDLE_SLEEP (60 * 60)
@@ -34,6 +35,7 @@ int main(void)
 	time_t vtime;
 	revent_t *e0, *e;
 	unsigned int s;
+	char *rname;
 	int rc;
 
 	printf("Timrec starting\n");
@@ -86,8 +88,14 @@ int main(void)
 		printf("Next event(s) at t=%ld:\n", e0->t);
 		e = e0;
 		while (e != NULL) {
+			rc = revent_rn_subst(e, &rname);
+			if (rc != 0) {
+				printf("Error substituting recording name.\n");
+				return 1;
+			}
 			printf("\ttype=%d recname='%s'\n",
-			    e->etype, e->preset->recname);
+			    e->etype, rname);
+			free(rname);
 			e = revent_next(e);
 		}
 

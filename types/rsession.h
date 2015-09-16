@@ -14,7 +14,7 @@ typedef struct {
 	/** Preset that generated this session */
 	struct preset *preset;
 	/** Nominal start time */
-	time_t rec_st;
+	time_t nst;
 	link_t lrsess;
 } rsession_t;
 
