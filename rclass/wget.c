@@ -3,7 +3,9 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
+#include <stdio.h>
 #include <unistd.h>
 
 static int wget_start(char *, char *, rsession_t *);
@@ -14,17 +16,16 @@ rclass_t rclass_wget = {
 	wget_stop
 };
 
-#include <stdio.h>
 static int wget_start(char *src, char *recname, rsession_t *rs)
 {
 	pid_t pid;
 	char *rfname = NULL;
 	char *lfname = NULL;
 	wget_session_t *ws = NULL;
+	struct stat sbuf;
+	int serno;
 	FILE *lf;
 	int rc;
-
-	printf("wget_start('%s', '%s', rrs)\n", src, recname);
 
 	ws = calloc(1, sizeof(wget_session_t));
 	if (rs == NULL) {
@@ -42,6 +43,25 @@ static int wget_start(char *src, char *recname, rsession_t *rs)
 		goto error;
 	}
 
+	rc = stat(rfname, &sbuf);
+	serno = 1;
+	if (rc == 0) {
+		/* File already exists */
+		free(rfname);
+
+		while (rc == 0) {
+			rc = asprintf(&rfname, "/var/opt/timrec/%s.%d", recname,
+			    serno++);
+			if (rc < 0) {
+				printf("Out of memory.\n");
+				rc = ENOMEM;
+				goto error;
+			}
+
+			rc = stat(rfname, &sbuf);
+		}
+	}
+
 	rc = asprintf(&lfname, "/var/opt/timrec/%s.log", recname);
 	if (rc < 0) {
 		printf("Out of memory.\n");
@@ -49,7 +69,7 @@ static int wget_start(char *src, char *recname, rsession_t *rs)
 		goto error;
 	}
 
-	lf = fopen(lfname, "wt");
+	lf = fopen(lfname, "at");
 	if (lf == NULL) {
 		printf("Error opening log file '%s'.\n", lfname);
 		rc = EIO;
