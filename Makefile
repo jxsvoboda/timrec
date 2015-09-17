@@ -38,8 +38,10 @@ clean:
 install:
 	mkdir -p /var/opt/timrec
 	mkdir -p $(prefix)/bin
+	mkdir -p $(prefix)/etc
 	install -o root -g root -m 755 $(output) $(prefix)/bin/$(output)
 	install -o root -g root -m 755 $(rcscript) $(prefix)/bin/$(rcscript)
+	install -o root -g root -m 644 sched.txt $(prefix)/etc/sched.txt
 	ln -s $(prefix)/bin/$(rcscript) /etc/init.d/$(rcname)
 	update-rc.d $(rcname) defaults
 

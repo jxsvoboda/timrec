@@ -7,7 +7,10 @@
 
 #define IDLE_SLEEP (60 * 60)
 
-const char *sched_fname = "sched.txt";
+const char *sched_fnames[] = {
+	"/opt/timrec/etc/sched.txt",
+	"sched.txt"
+};
 
 static void timrec_revents_execute(revents_t *revents)
 {
@@ -36,6 +39,7 @@ int main(void)
 	revent_t *e0, *e;
 	unsigned int s;
 	char *rname;
+	int i;
 	int rc;
 
 	printf("Timrec starting\n");
@@ -43,13 +47,20 @@ int main(void)
 	setvbuf(stdout, NULL, _IOLBF, 0);
 	revent_init();
 
-	rc = sched_load(sched_fname, &sched);
+	i = 0;
+	while (sched_fnames[i] != NULL) {
+		rc = sched_load(sched_fnames[i], &sched);
+		if (rc == 0 || rc != ENOENT)
+			break;
+		++i;
+	}
+
 	if (rc != 0) {
 		printf("Error loading schedule.\n");
 		return 1;
 	}
 
-	printf("Loaded schedule '%s'.\n", sched_fname);
+	printf("Loaded schedule '%s'.\n", sched_fnames[i]);
 	rc = clock_gettime(CLOCK_REALTIME, &ts);
 	if (rc != 0) {
 		printf("Error getting time.\n");

@@ -457,7 +457,7 @@ int sched_load(const char *fname, sched_t **rsched)
 
 	f = fopen(fname, "rt");
 	if (f == NULL) {
-		rc = EIO;
+		rc = ENOENT;
 		goto error;
 	}
 
