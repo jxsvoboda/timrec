@@ -19,6 +19,14 @@ static int sched_skip_ws(FILE *f)
 		c = fgetc(f);
 		if (c == 0)
 			return EIO;
+		if (c == '#') {
+			do {
+				c = fgetc(f);
+			} while (c != EOF && c != '\n');
+			if (c == '\n')
+				ungetc(c, f);
+			break;
+		}
 		if (c != ' ' && c != '\t') {
 			ungetc(c, f);
 			break;
@@ -370,6 +378,15 @@ static int sched_parse_preset(sched_t *sched, FILE *f)
 		return rc;
 
 	while (true) {
+		rc = sched_skip_ws(f);
+		if (rc != 0)
+			goto error;
+
+		c = fgetc(f);
+		if (c == '\n')
+			break;
+		ungetc(c, f);
+
 		rc = sched_parse_fld_name(f, &fldname);
 		if (rc != 0)
 			goto error;

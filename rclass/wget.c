@@ -36,7 +36,8 @@ static int wget_start(char *src, char *recname, rsession_t *rs)
 
 	rs->priv = ws;
 
-	rc = asprintf(&rfname, "/var/opt/timrec/%s", recname);
+	/* XXX Extension should be provided by recording source */
+	rc = asprintf(&rfname, "/var/opt/timrec/%s.ogg", recname);
 	if (rc < 0) {
 		printf("Out of memory.\n");
 		rc = ENOMEM;
@@ -50,7 +51,7 @@ static int wget_start(char *src, char *recname, rsession_t *rs)
 		free(rfname);
 
 		while (rc == 0) {
-			rc = asprintf(&rfname, "/var/opt/timrec/%s.%d", recname,
+			rc = asprintf(&rfname, "/var/opt/timrec/%s.%d.ogg", recname,
 			    serno++);
 			if (rc < 0) {
 				printf("Out of memory.\n");
