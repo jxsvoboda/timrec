@@ -5,7 +5,7 @@
 
 CC = gcc
 CFLAGS = -Wall -Werror -I. -std=gnu99 -D_GNU_SOURCE
-LIBS =
+LIBS = -lrt
 
 output = timrec
 rcscript = timrec.init
