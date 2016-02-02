@@ -113,7 +113,7 @@ static int wget_stop(rsession_t *rs)
 	int stat;
 
 	printf("wget_stop()\n");
-	rc = kill(ws->pid, SIGINT);
+	rc = kill(ws->pid, SIGTERM);
 	if (rc < 0) {
 		printf("Failed killing process %u\n", ws->pid);
 		return EIO;
