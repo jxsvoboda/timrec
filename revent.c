@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define CRO2_SRC "http://amp1.cesnet.cz:8000/cro2-256.ogg"
 #define RECNAME_MAX_LEN 1024
 
 static rsessions_t rsessions;
@@ -109,7 +108,7 @@ int revent_execute(revent_t *revent)
 			return ENOMEM;
 		}
 
-		rc = rcls->rec_start(CRO2_SRC, rname, rsess);
+		rc = rcls->rec_start(revent->preset->source, rname, rsess);
 		if (rc != 0) {
 			printf("Error starting recording.\n");
 			return rc;

@@ -3,12 +3,13 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+#include <source.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <stdio.h>
 #include <unistd.h>
 
-static int wget_start(char *, char *, rsession_t *);
+static int wget_start(source_t *, char *, rsession_t *);
 static int wget_stop(rsession_t *);
 
 rclass_t rclass_wget = {
@@ -16,7 +17,7 @@ rclass_t rclass_wget = {
 	wget_stop
 };
 
-static int wget_start(char *src, char *recname, rsession_t *rs)
+static int wget_start(source_t *source, char *recname, rsession_t *rs)
 {
 	pid_t pid;
 	char *rfname = NULL;
@@ -24,8 +25,12 @@ static int wget_start(char *src, char *recname, rsession_t *rs)
 	wget_session_t *ws = NULL;
 	struct stat sbuf;
 	int serno;
+	char *url;
 	FILE *lf;
 	int rc;
+
+	url = source->param;
+	printf("wget url=%s\n", url);
 
 	ws = calloc(1, sizeof(wget_session_t));
 	if (rs == NULL) {
@@ -91,7 +96,7 @@ static int wget_start(char *src, char *recname, rsession_t *rs)
 		if (rc < 0)
 			exit(1);
 
-		(void) execlp("wget", "wget", "-O", rfname, src, NULL);
+		(void) execlp("wget", "wget", "-O", rfname, url, NULL);
 		/* If we get here, execlp() has failed */
 		exit(1);
 	}

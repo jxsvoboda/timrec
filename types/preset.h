@@ -2,6 +2,7 @@
 #define TYPES_PRESET_H
 
 #include <adt/list.h>
+#include <types/source.h>
 #include <types/startspec.h>
 
 /** Recording preset
@@ -19,6 +20,8 @@ typedef struct preset {
 	unsigned long pre_buf_secs;
 	/** Seconds to extend beyond nominal end */
 	unsigned long post_buf_secs;
+	/** Recording source */
+	source_t *source;
 	/** Recording name */
 	char *recname;
 } preset_t;

@@ -5,7 +5,11 @@
 # Hry na CRo2
 dow=so; time=13:04; duration=120m; source=cro2; name=hra-%D
 dow=ne; time=13:04; duration=120m; source=cro2; name=pohadka-%D
-dow=ne; time=20:00; duration=120m; source=signal; name=hra-%D
+dow=ne; time=20:00; duration=120m; source=cro2; name=hra-%D
+
+# Sen noci svatojanske
+# Zjistit cas!
+date=2016-04-23; time=09:00; duration=120m; source=vltava; name=sen-noci-%D
 
 # Examples
 #dow=st; time=22:00; duration=90m; source=signal; name=cetba-st-%D

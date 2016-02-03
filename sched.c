@@ -3,6 +3,7 @@
 #include <preset.h>
 #include <revent.h>
 #include <sched.h>
+#include <source.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -225,11 +226,12 @@ static int sched_parse_field_duration(FILE *f, preset_t *p)
 	return 0;
 }
 
-static int sched_parse_field_source(FILE *f, preset_t *p)
+static int sched_parse_field_source(FILE *f, sched_t *sched, preset_t *p)
 {
 	int rc;
 	int i;
 	int c;
+	source_t *s;
 
 	rc = sched_skip_ws(f);
 	if (rc != 0)
@@ -263,6 +265,15 @@ static int sched_parse_field_source(FILE *f, preset_t *p)
 	}
 
 	name_buf[i] = '\0';
+
+	rc = sources_get_source(sched->sources, name_buf, &s);
+	if (rc != 0) {
+		printf("Error: unknown source '%s'.\n", name_buf);
+		return EIO;
+	}
+
+	p->source = s;
+
 	return 0;
 }
 
@@ -311,7 +322,7 @@ static int sched_parse_field_name(FILE *f, preset_t *p)
 	return 0;
 }
 
-static int sched_parse_field(FILE *f, char *fldname, preset_t *p)
+static int sched_parse_field(FILE *f, char *fldname, sched_t *sched, preset_t *p)
 {
 	if (strcmp(fldname, "dow") == 0)
 		return sched_parse_field_dow(f, p);
@@ -322,7 +333,7 @@ static int sched_parse_field(FILE *f, char *fldname, preset_t *p)
 	else if (strcmp(fldname, "duration") == 0)
 		return sched_parse_field_duration(f, p);
 	else if (strcmp(fldname, "source") == 0)
-		return sched_parse_field_source(f, p);
+		return sched_parse_field_source(f, sched, p);
 	else if (strcmp(fldname, "name") == 0)
 		return sched_parse_field_name(f, p);
 	else {
@@ -352,6 +363,11 @@ static int sched_preset_validate(preset_t *p)
 
 	if (p->duration_secs == 0) {
 		printf("Preset must have 'duration' specified.\n");
+		rc = EINVAL;
+	}
+
+	if (p->source == NULL) {
+		printf("Preset must have 'source' specified.\n");
 		rc = EINVAL;
 	}
 
@@ -407,7 +423,7 @@ static int sched_parse_preset(sched_t *sched, FILE *f)
 			goto error;
 		}
 
-		rc = sched_parse_field(f, fldname, p);
+		rc = sched_parse_field(f, fldname, sched, p);
 		if (rc != 0)
 			goto error;
 
@@ -445,7 +461,7 @@ error:
 	return rc;
 }
 
-int sched_load(const char *fname, sched_t **rsched)
+int sched_load(sources_t *sources, const char *fname, sched_t **rsched)
 {
 	sched_t *sched = NULL;
 	FILE *f = NULL;
@@ -461,6 +477,7 @@ int sched_load(const char *fname, sched_t **rsched)
 		goto error;
 	}
 
+	sched->sources = sources;
 	list_initialize(&sched->presets);
 
 	while (!feof(f)) {

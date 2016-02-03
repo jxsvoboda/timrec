@@ -1,6 +1,6 @@
 #
 # Timrec - timed media recording service
-# (c) 2015 Jiri Svoboda
+# (c) 2015-2016 Jiri Svoboda
 #
 
 CC = gcc
@@ -19,6 +19,7 @@ sources = \
 	revent.c \
 	rsession.c \
 	sched.c \
+	source.c \
 	startspec.c \
 	timrec.c
 
@@ -42,6 +43,7 @@ install:
 	install -o root -g root -m 755 $(output) $(prefix)/bin/$(output)
 	install -o root -g root -m 755 $(rcscript) $(prefix)/bin/$(rcscript)
 	install -o root -g root -m 644 sched.txt $(prefix)/etc/sched.txt
+	install -o root -g root -m 644 source.txt $(prefix)/etc/source.txt
 	ln -s $(prefix)/bin/$(rcscript) /etc/init.d/$(rcname)
 	update-rc.d $(rcname) defaults
 

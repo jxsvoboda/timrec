@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <revent.h>
 #include <sched.h>
+#include <source.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -10,6 +11,11 @@
 const char *sched_fnames[] = {
 	"/opt/timrec/etc/sched.txt",
 	"sched.txt"
+};
+
+const char *source_fnames[] = {
+	"/opt/timrec/etc/source.txt",
+	"source.txt"
 };
 
 static void timrec_revents_execute(revents_t *revents)
@@ -32,6 +38,7 @@ static void timrec_revents_execute(revents_t *revents)
 int main(void)
 {
 	sched_t *sched;
+	sources_t *sources;
 	struct timespec ts;
 	revents_t nevents;
 	time_t curtime;
@@ -47,9 +54,28 @@ int main(void)
 	setvbuf(stdout, NULL, _IOLBF, 0);
 	revent_init();
 
+	/* Load sources */
+
+	i = 0;
+	while (source_fnames[i] != NULL) {
+		rc = sources_load(source_fnames[i], &sources);
+		if (rc == 0 || rc != ENOENT)
+			break;
+		++i;
+	}
+
+	if (rc != 0) {
+		printf("Error loading sources.\n");
+		return 1;
+	}
+
+	printf("Loaded sources '%s'.\n", source_fnames[i]);
+
+	/* Load schedule */
+
 	i = 0;
 	while (sched_fnames[i] != NULL) {
-		rc = sched_load(sched_fnames[i], &sched);
+		rc = sched_load(sources, sched_fnames[i], &sched);
 		if (rc == 0 || rc != ENOENT)
 			break;
 		++i;
@@ -61,6 +87,7 @@ int main(void)
 	}
 
 	printf("Loaded schedule '%s'.\n", sched_fnames[i]);
+
 	rc = clock_gettime(CLOCK_REALTIME, &ts);
 	if (rc != 0) {
 		printf("Error getting time.\n");
