@@ -21,3 +21,5 @@ date=2017-12-31; time=13:04; duration=120m; source=cro2; name=hra-%D
 # Examples
 #dow=st; time=22:00; duration=90m; source=signal; name=cetba-st-%D
 #date=2015-09-10; time=14:31; duration=1m; source=cro2; name=special
+
+dow=ct; time=08:10; duration=150m; source=ct2; name=jih

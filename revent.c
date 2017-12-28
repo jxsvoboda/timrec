@@ -88,7 +88,7 @@ int revent_rn_subst(revent_t *revent, char **sn)
 
 int revent_execute(revent_t *revent)
 {
-	rclass_t *rcls = &rclass_wget;
+	rclass_t *rcls = revent->preset->source->rclass;
 	rsession_t *rsess;
 	char *rname;
 	int rc;

@@ -1,5 +1,6 @@
 #include <adt/list.h>
 #include <errno.h>
+#include <rclass/dvb.h>
 #include <rclass/wget.h>
 #include <source.h>
 #include <stdio.h>
@@ -171,12 +172,14 @@ static int source_parse_rclass(FILE *f, source_t *s)
 
 	name_buf[i] = '\0';
 
-	if (strcmp(name_buf, "wget") != 0) {
+	if (strcmp(name_buf, "wget") == 0) {
+		s->rclass = &rclass_wget;
+	} else if (strcmp(name_buf, "dvb") == 0) {
+		s->rclass = &rclass_dvb;
+	} else {
 		printf("Unknown recording class '%s'.\n", name_buf);
 		return EIO;
 	}
-
-	s->rclass = &rclass_wget;
 
 	return 0;
 }

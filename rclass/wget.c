@@ -1,3 +1,11 @@
+/*
+ * Wget recording class
+ *
+ * Record a web stream using wget
+ *
+ * param: Stream URL
+ */
+ 
 #include <errno.h>
 #include <rclass/wget.h>
 #include <signal.h>
@@ -26,7 +34,7 @@ static int wget_start(source_t *source, char *recname, rsession_t *rs)
 	struct stat sbuf;
 	int serno;
 	char *url;
-	FILE *lf;
+	FILE *lf = NULL;
 	int rc;
 
 	url = source->param;
@@ -102,12 +110,19 @@ static int wget_start(source_t *source, char *recname, rsession_t *rs)
 	}
 
 	/* Parent */
+	free(rfname);
+	free(lfname);
 	fclose(lf);
 	ws->pid = pid;
 	return 0;
 error:
 	free(ws);
-	free(rfname);
+	if (rfname != NULL)
+		free(rfname);
+	if (lfname != NULL)
+		free(lfname);
+	if (lf != NULL)
+		fclose(lf);
 	return rc;
 }
 

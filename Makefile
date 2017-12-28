@@ -15,6 +15,7 @@ prefix = /opt/timrec
 sources = \
 	adt/list.c \
 	preset.c \
+	rclass/dvb.c \
 	rclass/wget.c \
 	revent.c \
 	rsession.c \
