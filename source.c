@@ -1,5 +1,6 @@
 #include <adt/list.h>
 #include <errno.h>
+#include <field.h>
 #include <rclass/dvb.h>
 #include <rclass/wget.h>
 #include <source.h>
@@ -100,6 +101,7 @@ static int source_parse_fld_name(FILE *f, char **fldname)
 
 static int source_parse_name(FILE *f, source_t *s)
 {
+	field_read_t field;
 	int rc;
 	int i;
 	int c;
@@ -108,18 +110,12 @@ static int source_parse_name(FILE *f, source_t *s)
 	if (rc != 0)
 		return EIO;
 
+	field_read_init(&field, f);
+
 	i = 0;
 	while (true) {
-		c = fgetc(f);
+		c = field_read_getc(&field);
 		if (c == EOF)
-			break;
-
-		if (c == ';' || c == '\n') {
-			ungetc(c, f);
-			break;
-		}
-
-		if (c == ' ' || c == '\t')
 			break;
 
 		if (i >= NAME_BUF_SIZE - 1) {
@@ -140,6 +136,7 @@ static int source_parse_name(FILE *f, source_t *s)
 
 static int source_parse_rclass(FILE *f, source_t *s)
 {
+	field_read_t field;
 	int rc;
 	int i;
 	int c;
@@ -148,22 +145,16 @@ static int source_parse_rclass(FILE *f, source_t *s)
 	if (rc != 0)
 		return EIO;
 
+	field_read_init(&field, f);
+
 	i = 0;
 	while (true) {
-		c = fgetc(f);
+		c = field_read_getc(&field);
 		if (c == EOF)
 			break;
 
-		if (c == ';' || c == '\n') {
-			ungetc(c, f);
-			break;
-		}
-
-		if (c == ' ' || c == '\t')
-			break;
-
 		if (i >= NAME_BUF_SIZE - 1) {
-			printf("Source name too long.\n");
+			printf("Source rclass too long.\n");
 			return EIO;
 		}
 
@@ -186,6 +177,7 @@ static int source_parse_rclass(FILE *f, source_t *s)
 
 static int source_parse_param(FILE *f, source_t *s)
 {
+	field_read_t field;
 	int rc;
 	int i;
 	int c;
@@ -194,22 +186,16 @@ static int source_parse_param(FILE *f, source_t *s)
 	if (rc != 0)
 		return EIO;
 
+	field_read_init(&field, f);
+
 	i = 0;
 	while (true) {
-		c = fgetc(f);
+		c = field_read_getc(&field);
 		if (c == EOF)
 			break;
 
-		if (c == ';' || c == '\n') {
-			ungetc(c, f);
-			break;
-		}
-
-		if (c == ' ' || c == '\t')
-			break;
-
 		if (i >= NAME_BUF_SIZE - 1) {
-			printf("Source name too long.\n");
+			printf("Source param too long.\n");
 			return EIO;
 		}
 

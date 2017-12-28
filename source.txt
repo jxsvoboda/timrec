@@ -4,4 +4,4 @@
 
 name=cro2; rclass=wget; param=http://amp1.cesnet.cz:8000/cro2-256.ogg
 name=vltava; rclass=wget; param=http://amp.cesnet.cz:8000/cro3-256.ogg
-name=ct2; rclass=dvb; param=CT-2
+name=ct2; rclass=dvb; param="CT 2"
