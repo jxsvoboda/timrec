@@ -48,6 +48,8 @@ sources = \
 objects = $(sources:.c=.o)
 headers = $(wildcard *.h */*.h)
 
+bkqual = $$(date '+%Y-%m-%d')
+
 all: $(output)
 
 $(output): $(objects)
@@ -76,3 +78,7 @@ uninstall:
 	rm -f $(prefix)/bin/$(rcscript)
 	rmdir $(prefix)/bin
 	rmdir $(prefix)
+
+backup: clean
+	cd .. && tar czf timrec-$(bkqual).tar.gz trunk
+	cd .. && rm -f timrec-latest.tar.gz && ln -s timrec-$(bkqual).tar.gz timrec-latest.tar.gz
