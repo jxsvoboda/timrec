@@ -99,8 +99,8 @@ sched.txt
               | with the recording date in the YYYY-MM-DD format.
 
 Note that recording will start 10 minutes ahead of nominal programming
-start time and will finish 15 minutes after the nominal end of the 
-programming. These buffers cannot be configured at the moment.
+start time and will finish 15 minutes after the nominal end of
+the programming. These buffers cannot be configured at the moment.
 
 Example:
 
