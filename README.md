@@ -29,7 +29,7 @@ command and the 'dvb' backend can record DVB broadcasts using dvb-tools
 (dvbv5-zap).
 
 timrec runs as a system service and is configured by CSV-like configuration
-files. Currently systemd is not supported for service installation.
+files. Systemd is required for service installation.
 
 Compiling
 ---------

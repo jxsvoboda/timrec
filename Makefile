@@ -28,8 +28,8 @@ CFLAGS = -Wall -Werror -I. -std=gnu99 -D_GNU_SOURCE
 LIBS = -lrt
 
 output = timrec
-rcscript = timrec.init
-rcname = timrec
+svcname = timrec
+svcfile = $(svcname).service
 prefix = /opt/timrec
 
 sources = \
@@ -65,17 +65,20 @@ install:
 	mkdir -p $(prefix)/bin
 	mkdir -p $(prefix)/etc
 	install -o root -g root -m 755 $(output) $(prefix)/bin/$(output)
-	install -o root -g root -m 755 $(rcscript) $(prefix)/bin/$(rcscript)
 	install -o root -g root -m 644 sched.txt $(prefix)/etc/sched.txt
 	install -o root -g root -m 644 source.txt $(prefix)/etc/source.txt
-	ln -s $(prefix)/bin/$(rcscript) /etc/init.d/$(rcname)
-	update-rc.d $(rcname) defaults
+	install -o root -g root -m 755 $(svcfile) /etc/systemd/system/$(svcfile)
+	systemctl enable $(svcname)
+	systemctl start $(svcname)
 
 uninstall:
-	update-rc.d $(rcname) remove
-	rm -f /etc/init.d/$(rcname)
+	systemctl stop $(svcname)
+	systemctl disable $(svcname)
+	rm -f /etc/systemd/system/$(svcfile)
+	systemctl daemon-reload
+	systemctl reset-failed
 	rm -f $(prefix)/bin/$(output)
-	rm -f $(prefix)/bin/$(rcscript)
+	rm -f $(prefix)/bin/$(svcfile)
 	rmdir $(prefix)/bin
 	rmdir $(prefix)
 

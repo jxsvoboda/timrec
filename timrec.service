@@ -1,0 +1,12 @@
+[Unit]
+Description=Timed Media Recording Service
+After=network.target
+
+[Service]
+ExecStart=/opt/timrec/bin/timrec
+StandardOutput=/var/log/timrec.log
+StandardError=/var/log/timrec.err
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
