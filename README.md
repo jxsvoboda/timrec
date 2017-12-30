@@ -98,6 +98,10 @@ sched.txt
   name        | Name of the output file. A %D pattern will be replaced
               | with the recording date in the YYYY-MM-DD format.
 
+Note that recording will start 10 minutes ahead of nominal programming
+start time and will finish 15 minutes after the nominal end of the 
+programming. These buffers cannot be configured at the moment.
+
 Example:
 
     dow=so; time=13:04; duration=120m; source=cro2; name=hra-%D
