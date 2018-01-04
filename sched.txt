@@ -7,16 +7,21 @@ dow=so; time=13:04; duration=120m; source=cro2; name=hra-%D
 dow=ne; time=13:04; duration=120m; source=cro2; name=pohadka-%D
 dow=ne; time=20:00; duration=120m; source=cro2; name=hra-%D
 
-# Hry na CRO2 svatky 2017
-date=2017-07-05; time=13:04; duration=120m; source=cro2; name=hra-%D
-date=2017-07-06; time=13:04; duration=120m; source=cro2; name=hra-%D
-date=2017-09-28; time=13:04; duration=120m; source=cro2; name=hra-%D
-date=2017-10-28; time=13:04; duration=120m; source=cro2; name=hra-%D
-date=2017-11-17; time=13:04; duration=120m; source=cro2; name=hra-%D
-date=2017-12-24; time=13:04; duration=120m; source=cro2; name=hra-%D
-date=2017-12-25; time=13:04; duration=120m; source=cro2; name=hra-%D
-date=2017-12-26; time=13:04; duration=120m; source=cro2; name=hra-%D
-date=2017-12-31; time=13:04; duration=120m; source=cro2; name=hra-%D
+# Hry na CRO2 svatky 2018
+date=2018-03-30; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-04-01; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-05-01; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-05-08; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-07-05; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-07-06; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-09-28; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-10-28; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-11-17; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-12-24; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-12-25; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-12-26; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2018-12-31; time=13:04; duration=120m; source=cro2; name=hra-%D
+date=2019-01-01; time=13:04; duration=120m; source=cro2; name=hra-%D
 
 # Examples
 #dow=st; time=22:00; duration=90m; source=signal; name=cetba-st-%D
