@@ -67,7 +67,7 @@ install:
 	install -o root -g root -m 755 $(output) $(prefix)/bin/$(output)
 	install -o root -g root -m 644 sched.txt $(prefix)/etc/sched.txt
 	install -o root -g root -m 644 source.txt $(prefix)/etc/source.txt
-	install -o root -g root -m 755 $(svcfile) /etc/systemd/system/$(svcfile)
+	install -o root -g root -m 644 $(svcfile) /etc/systemd/system/$(svcfile)
 	systemctl enable $(svcname)
 	systemctl start $(svcname)
 
