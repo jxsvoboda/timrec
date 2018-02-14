@@ -37,7 +37,7 @@ time_t startspec_date_tod_ts(ds_date_t *date, tod_t *tod)
 	t.tm_year = date->y - 1900;
 	t.tm_isdst = -1;
 
-        return mktime(&t);
+	return mktime(&t);
 }
 
 void startspec_ts_date_tod(time_t t, ds_date_t *date, tod_t *tod)
@@ -63,22 +63,36 @@ int startspec_days_in_month(int year, int month)
 	bool isleap;
 
 	isleap = (year % 4) == 0;
-	if ((year % 100) == 0) isleap = false;
-	if ((year % 400) == 0) isleap = true;
+	if ((year % 100) == 0)
+		isleap = false;
+	if ((year % 400) == 0)
+		isleap = true;
 
 	switch (month) {
-	case 1: return 31;
-	case 2: return 28 + isleap;
-	case 3: return 31;
-	case 4: return 30;
-	case 5: return 31;
-	case 6: return 30;
-	case 7: return 31;
-	case 8: return 31;
-	case 9: return 30;
-	case 10: return 31;
-	case 11: return 30;
-	case 12: return 31;
+	case 1:
+		return 31;
+	case 2:
+		return 28 + isleap;
+	case 3:
+		return 31;
+	case 4:
+		return 30;
+	case 5:
+		return 31;
+	case 6:
+		return 30;
+	case 7:
+		return 31;
+	case 8:
+		return 31;
+	case 9:
+		return 30;
+	case 10:
+		return 31;
+	case 11:
+		return 30;
+	case 12:
+		return 31;
 	}
 
 	return 0;

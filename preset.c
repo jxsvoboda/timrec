@@ -35,8 +35,8 @@ int preset_create(preset_t **rpreset)
 	if (preset == NULL)
 		return ENOMEM;
 
-	preset->pre_buf_secs = 10*60;
-	preset->post_buf_secs = 15*60;
+	preset->pre_buf_secs = 10 * 60;
+	preset->post_buf_secs = 15 * 60;
 
 	*rpreset = preset;
 	return 0;

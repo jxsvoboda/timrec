@@ -51,7 +51,7 @@ rsession_t *rsession_find(rsessions_t *rss, revent_t *stop_ev)
 		if (rs->preset == stop_ev->preset &&
 		    rs->nst == stop_ev->nst) {
 			    /* Match */
-			    return rs;
+			return rs;
 		}
 	}
 

@@ -198,7 +198,8 @@ static int sched_parse_field_duration(FILE *f, preset_t *p)
 
 	duration = 0;
 
-	nfields = 0; lscale = 3600 * 24 + 1;
+	nfields = 0;
+	lscale = 3600 * 24 + 1;
 	while (true) {
 		nread = fscanf(f, "%d", &val);
 		if (nread != 1)
