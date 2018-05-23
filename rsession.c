@@ -1,7 +1,7 @@
 /*
  * Copyright 2017 Jiri Svoboda
  *
- * Permission is hereby granted, free of charge, to any person obtaining 
+ * Permission is hereby granted, free of charge, to any person obtaining
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -50,7 +50,7 @@ rsession_t *rsession_find(rsessions_t *rss, revent_t *stop_ev)
 	list_foreach(rss->rsess, lrsess, rsession_t, rs) {
 		if (rs->preset == stop_ev->preset &&
 		    rs->nst == stop_ev->nst) {
-			    /* Match */
+			/* Match */
 			return rs;
 		}
 	}

@@ -1,7 +1,7 @@
 /*
  * Copyright 2017 Jiri Svoboda
  *
- * Permission is hereby granted, free of charge, to any person obtaining 
+ * Permission is hereby granted, free of charge, to any person obtaining
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -148,7 +148,7 @@ int preset_get_next_event(preset_t *preset, time_t t, revent_t *revent)
 					link_initialize(&revent->lrevents);
 					return 0;
 				} else if (tstop >= t) {
-		    			/* Stop */
+					/* Stop */
 					revent->etype = re_stop;
 					revent->preset = preset;
 					revent->t = tstop;

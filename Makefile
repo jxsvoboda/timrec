@@ -82,6 +82,10 @@ uninstall:
 	rmdir $(prefix)/bin
 	rmdir $(prefix)
 
+# Cstyle check. Run ccheck from https://github.com/jxsvoboda/sycek
+ccheck:
+	ccheck-run.sh $$PWD
+
 backup: clean
 	cd .. && tar czf timrec-$(bkqual).tar.gz trunk
 	cd .. && rm -f timrec-latest.tar.gz && ln -s timrec-$(bkqual).tar.gz timrec-latest.tar.gz
